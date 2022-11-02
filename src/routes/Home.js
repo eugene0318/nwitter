@@ -1,29 +1,38 @@
 import React, { useEffect, useState } from "react";
+import Nweet from "../components/Nweet";
 import { dbService } from "../fbase";
+import { addDoc, collection, getDocs, onSnapshot } from "firebase/firestore";
 
 const Home = ({ userObj }) => {
-  console.log(userObj);
+  //console.log(userObj);
   const [nweet, setNweet] = useState("");
   const [nweets, setNweets] = useState([]);
-  const getNweets = async () => {
-    const dbNweets = await dbService.collection("nweets").get();
-    dbNweets.forEach((document) => {
-      const nweetObject = {
-        ...document.data(),
-        id: document.id,
-      };
-      setNweets((prev) => [nweetObject, ...prev]);
-    });
-    //console.log(dbNweets);
-  };
+  //   const getNweets = async () => {
+  //     const dbNweets = await dbService.collection("nweets").get();
+  //     dbNweets.forEach((document) => {
+  //       const nweetObject = {
+  //         ...document.data(),
+  //         id: document.id,
+  //       };
+  //       setNweets((prev) => [nweetObject, ...prev]);
+  //     });
+  //     //console.log(dbNweets);
+  //   };
   useEffect(() => {
-    getNweets();
+    onSnapshot(collection(dbService, "nweets"), (snapshot) => {
+      const nweetArray = snapshot.docs.map((doc) => ({
+        id: doc.id,
+        ...doc.data(),
+      }));
+      console.log(nweetArray);
+      setNweets(nweetArray);
+    });
   }, []);
   const onSubmit = async (event) => {
     event.preventDefault();
-    await dbService.collection("nweets").add({
+    await addDoc(collection(dbService, "nweets"), {
       text: nweet,
-      createdAt: Date.now(),
+      createAt: Date.now(),
       creatorId: userObj.uid,
     });
     setNweet("");
@@ -42,16 +51,18 @@ const Home = ({ userObj }) => {
           value={nweet}
           onChange={onChange}
           type="text"
-          placeholder="what's on your mind"
-          maxLength={140}
+          placeholder="What's on your mind?"
+          maxLength={120}
         />
         <input type="submit" value="Nweet" />
       </form>
       <div>
         {nweets.map((nweet) => (
-          <div key={nweet.id}>
-            <h4>{nweet.nweet}</h4>
-          </div>
+          <Nweet
+            key={nweet.id}
+            nweetObj={nweet}
+            isOwner={nweet.creatorId === userObj.uid}
+          />
         ))}
       </div>
     </div>
