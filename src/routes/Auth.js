@@ -4,6 +4,7 @@ import {
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
 } from "firebase/auth";
+import AuthForm from "../components/AuthForm";
 
 const Auth = () => {
   const [email, setEmail] = useState("");
@@ -58,28 +59,7 @@ const Auth = () => {
   };
   return (
     <div>
-      <form onSubmit={onSubmit}>
-        <input
-          name="email"
-          type="text"
-          placeholder="Email"
-          required
-          defaultValue={email}
-          onChange={onChange}
-        />
-        <input
-          name="password"
-          type="password"
-          placeholder="Password"
-          required
-          defaultValue={password}
-          onChange={onChange}
-        />
-        <input type="submit" value={newAccount ? "Create Account" : "Log In"} />
-      </form>
-      <span onClick={toggleAccount}>
-        {newAccount ? "Sign in" : "Create Account"}
-      </span>
+      <AuthForm />
       <div>{error}</div>
       <div>
         <button onClick={onSocialClick} name="google">

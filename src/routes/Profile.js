@@ -10,6 +10,7 @@ export default ({ refreshUser, userObj }) => {
     authService.signOut();
     //authService.currentUser.uid;
     history.push("/");
+    // refreshUser();
   };
   const onChange = (event) => {
     const {
@@ -31,7 +32,7 @@ export default ({ refreshUser, userObj }) => {
       .collection("nweets")
       .where("creatorId", "==", userObj.uid)
       .get();
-    console.log(nweets.docs.map((doc) => doc.data()));
+    //console.log(nweets.docs.map((doc) => doc.data()));
   };
   useEffect(() => {
     getMyNweets();
